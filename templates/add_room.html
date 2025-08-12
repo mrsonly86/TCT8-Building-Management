@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm phòng mới - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Thêm phòng mới{% endblock %}
+{% block page_subtitle %}Thêm phòng mới vào hệ thống quản lý{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Thông tin phòng mới
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_room_post') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="room_number" class="form-label">Số phòng *</label>
+                            <input type="text" class="form-control" id="room_number" name="room_number" 
+                                   placeholder="Ví dụ: 001, 002, 101..." pattern="[0-9]{3}" maxlength="3" required>
+                            <div class="form-text">Nhập 3 chữ số (001, 002, 003...)</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="floor" class="form-label">Tầng *</label>
+                            <select class="form-control" id="floor" name="floor" required>
+                                <option value="">Chọn tầng</option>
+                                {% for i in range(1, 21) %}
+                                    <option value="{{ i }}">Tầng {{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="room_type" class="form-label">Loại phòng *</label>
+                            <select class="form-control" id="room_type" name="room_type" required>
+                                <option value="">Chọn loại phòng</option>
+                                <option value="Studio">Studio</option>
+                                <option value="1 Phòng ngủ">1 Phòng ngủ</option>
+                                <option value="2 Phòng ngủ">2 Phòng ngủ</option>
+                                <option value="3 Phòng ngủ">3 Phòng ngủ</option>
+                                <option value="Penthouse">Penthouse</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="area" class="form-label">Diện tích (m²)</label>
+                            <input type="number" class="form-control" id="area" name="area" 
+                                   step="0.1" min="0" placeholder="Ví dụ: 45.5">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="monthly_fee" class="form-label">Phí hàng tháng (VNĐ)</label>
+                            <input type="number" class="form-control" id="monthly_fee" name="monthly_fee" 
+                                   min="0" placeholder="Ví dụ: 15000000">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="available">Trống</option>
+                                <option value="occupied">Đã thuê</option>
+                                <option value="maintenance">Bảo trì</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('rooms') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Quay lại
+                        </a>
+                        
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>
+                                Đặt lại
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Lưu phòng
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto format room number input
+document.getElementById('room_number').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 3) {
+        value = value.slice(0, 3);
+    }
+    e.target.value = value.padStart(Math.min(value.length, 3), '0');
+});
+
+// Auto format monthly fee with thousand separators
+document.getElementById('monthly_fee').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    if (value) {
+        e.target.value = parseInt(value).toLocaleString('vi-VN');
+    }
+});
+
+// Remove formatting before form submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const monthlyFeeInput = document.getElementById('monthly_fee');
+    monthlyFeeInput.value = monthlyFeeInput.value.replace(/[^\d]/g, '');
+});
+</script>
+{% endblock %}
