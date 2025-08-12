@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Báo cáo - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Báo cáo{% endblock %}
+{% block page_subtitle %}Báo cáo tổng hợp hoạt động tòa nhà{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5>Tổng doanh thu tháng</h5>
+                <h3>0 VNĐ</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5>Chi phí bảo trì</h5>
+                <h3>0 VNĐ</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <h5>Tỷ lệ lấp đầy</h5>
+                <h3>100%</h3>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h5>Khách hàng mới</h5>
+                <h3>1</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Báo cáo nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <button class="list-group-item list-group-item-action" onclick="generateReport('rooms')">
+                        <i class="fas fa-door-open me-2"></i>
+                        Báo cáo phòng
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="generateReport('customers')">
+                        <i class="fas fa-users me-2"></i>
+                        Báo cáo khách hàng
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="generateReport('maintenance')">
+                        <i class="fas fa-wrench me-2"></i>
+                        Báo cáo bảo trì
+                    </button>
+                    <button class="list-group-item list-group-item-action" onclick="generateReport('financial')">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Báo cáo tài chính
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Xuất báo cáo</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Loại báo cáo</label>
+                        <select class="form-control">
+                            <option>Báo cáo tháng</option>
+                            <option>Báo cáo quý</option>
+                            <option>Báo cáo năm</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Thời gian</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <input type="date" class="form-control" placeholder="Từ ngày">
+                            </div>
+                            <div class="col-6">
+                                <input type="date" class="form-control" placeholder="Đến ngày">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Định dạng</label>
+                        <select class="form-control">
+                            <option>PDF</option>
+                            <option>Excel</option>
+                            <option>CSV</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" class="btn btn-success w-100" onclick="exportReport()">
+                        <i class="fas fa-download me-2"></i>
+                        Xuất báo cáo
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function generateReport(type) {
+    alert('Chức năng tạo báo cáo ' + type + ' sẽ được triển khai sau');
+}
+
+function exportReport() {
+    alert('Chức năng xuất báo cáo sẽ được triển khai sau');
+}
+</script>
+{% endblock %}

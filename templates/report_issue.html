@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Báo cáo sự cố - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Báo cáo sự cố{% endblock %}
+{% block page_subtitle %}Báo cáo sự cố trong tòa nhà để được xử lý kịp thời{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Thông tin sự cố
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="#">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="incident_type" class="form-label">Loại sự cố *</label>
+                            <select class="form-control" id="incident_type" name="incident_type" required>
+                                <option value="">Chọn loại sự cố</option>
+                                <option value="electrical">Điện</option>
+                                <option value="water">Nước</option>
+                                <option value="elevator">Thang máy</option>
+                                <option value="ac">Điều hòa</option>
+                                <option value="security">An ninh</option>
+                                <option value="cleaning">Vệ sinh</option>
+                                <option value="noise">Tiếng ồn</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Vị trí *</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="Ví dụ: Phòng 001, Sảnh chính, Tầng 1..." required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="urgency" class="form-label">Mức độ khẩn cấp *</label>
+                            <select class="form-control" id="urgency" name="urgency" required>
+                                <option value="">Chọn mức độ</option>
+                                <option value="low">Thấp</option>
+                                <option value="medium">Trung bình</option>
+                                <option value="high">Cao</option>
+                                <option value="emergency">Khẩn cấp</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="contact_phone" class="form-label">Số điện thoại liên hệ</label>
+                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
+                                   placeholder="Số điện thoại để liên hệ xử lý">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Tiêu đề sự cố *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="Tóm tắt ngắn gọn về sự cố" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả chi tiết *</label>
+                        <textarea class="form-control" id="description" name="description" rows="5" 
+                                  placeholder="Mô tả chi tiết về sự cố, thời gian xảy ra, tình trạng hiện tại..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="photos" class="form-label">Hình ảnh (nếu có)</label>
+                        <input type="file" class="form-control" id="photos" name="photos" 
+                               accept="image/*" multiple>
+                        <div class="form-text">Có thể chọn nhiều hình ảnh để minh họa sự cố</div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Quay lại
+                        </a>
+                        
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>
+                                Đặt lại
+                            </button>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Gửi báo cáo
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Previous reports -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Báo cáo trước đây</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-3">
+                    <i class="fas fa-history fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">Chưa có báo cáo sự cố nào trước đây</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-fill contact phone from customer profile if available
+document.addEventListener('DOMContentLoaded', function() {
+    // This would be filled from the customer's profile data
+    // For now, it's just a placeholder
+});
+
+// Preview uploaded images
+document.getElementById('photos').addEventListener('change', function(e) {
+    // TODO: Implement image preview functionality
+});
+</script>
+{% endblock %}

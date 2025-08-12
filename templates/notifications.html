@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Thông báo - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Thông báo{% endblock %}
+{% block page_subtitle %}Thông báo từ ban quản lý tòa nhà{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4>Danh sách thông báo</h4>
+    </div>
+    <button class="btn btn-primary" onclick="addNotification()">
+        <i class="fas fa-plus me-2"></i>
+        Tạo thông báo mới
+    </button>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-body">
+        {% if notifications %}
+        {% for notification in notifications %}
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-0">{{ notification.title }}</h6>
+                    <small class="text-muted">
+                        {{ notification.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        {% if notification.type != 'general' %}
+                            • <span class="badge bg-secondary">{{ notification.type.title() }}</span>
+                        {% endif %}
+                    </small>
+                </div>
+                {% if session.role == 'admin' %}
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="editNotification({{ notification.id }})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="deleteNotification({{ notification.id }})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p class="mb-0">{{ notification.content | safe }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-bell fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có thông báo nào</h5>
+            {% if session.role == 'admin' %}
+            <p class="text-muted">Hãy tạo thông báo đầu tiên để thông tin đến cư dân.</p>
+            <button class="btn btn-primary" onclick="addNotification()">
+                <i class="fas fa-plus me-2"></i>
+                Tạo thông báo đầu tiên
+            </button>
+            {% else %}
+            <p class="text-muted">Hiện tại không có thông báo mới nào.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addNotification() {
+    alert('Chức năng tạo thông báo mới sẽ được triển khai sau');
+}
+
+function editNotification(notificationId) {
+    alert('Chức năng chỉnh sửa thông báo sẽ được triển khai sau');
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('Bạn có chắc chắn muốn xóa thông báo này không?')) {
+        alert('Chức năng xóa thông báo sẽ được triển khai sau');
+    }
+}
+</script>
+{% endblock %}

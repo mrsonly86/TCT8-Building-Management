@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm thiết bị mới - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Thêm thiết bị mới{% endblock %}
+{% block page_subtitle %}Thêm thiết bị mới vào hệ thống quản lý{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs me-2"></i>
+                    Thông tin thiết bị mới
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_equipment_post') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Tên thiết bị *</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="Ví dụ: Thang máy số 1" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="equipment_type" class="form-label">Loại thiết bị *</label>
+                            <select class="form-control" id="equipment_type" name="equipment_type" required>
+                                <option value="">Chọn loại thiết bị</option>
+                                <option value="Thang máy">Thang máy</option>
+                                <option value="Điều hòa">Điều hòa</option>
+                                <option value="Máy phát điện">Máy phát điện</option>
+                                <option value="Hệ thống PCCC">Hệ thống PCCC</option>
+                                <option value="Camera an ninh">Camera an ninh</option>
+                                <option value="Hệ thống điện">Hệ thống điện</option>
+                                <option value="Hệ thống nước">Hệ thống nước</option>
+                                <option value="Cổng tự động">Cổng tự động</option>
+                                <option value="Máy bơm">Máy bơm</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Vị trí</label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="Ví dụ: Tầng 1, Sảnh chính">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="serial_number" class="form-label">Số serial</label>
+                            <input type="text" class="form-control" id="serial_number" name="serial_number" 
+                                   placeholder="Nhập số serial của thiết bị">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="purchase_date" class="form-label">Ngày mua</label>
+                            <input type="date" class="form-control" id="purchase_date" name="purchase_date">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="warranty_until" class="form-label">Bảo hành đến</label>
+                            <input type="date" class="form-control" id="warranty_until" name="warranty_until">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="active">Hoạt động</option>
+                                <option value="maintenance">Đang bảo trì</option>
+                                <option value="broken">Hỏng</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="maintenance_interval" class="form-label">Chu kỳ bảo trì (tháng)</label>
+                            <select class="form-control" id="maintenance_interval" name="maintenance_interval">
+                                <option value="">Không có chu kỳ cố định</option>
+                                <option value="1">1 tháng</option>
+                                <option value="3">3 tháng</option>
+                                <option value="6">6 tháng</option>
+                                <option value="12">12 tháng</option>
+                                <option value="24">24 tháng</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="last_maintenance" class="form-label">Bảo trì lần cuối</label>
+                            <input type="date" class="form-control" id="last_maintenance" name="last_maintenance">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="next_maintenance" class="form-label">Bảo trì tiếp theo</label>
+                            <input type="date" class="form-control" id="next_maintenance" name="next_maintenance">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('equipment') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Quay lại
+                        </a>
+                        
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>
+                                Đặt lại
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Lưu thiết bị
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto calculate next maintenance based on last maintenance and interval
+document.getElementById('last_maintenance').addEventListener('change', calculateNextMaintenance);
+document.getElementById('maintenance_interval').addEventListener('change', calculateNextMaintenance);
+
+function calculateNextMaintenance() {
+    const lastMaintenanceDate = document.getElementById('last_maintenance').value;
+    const intervalMonths = document.getElementById('maintenance_interval').value;
+    
+    if (lastMaintenanceDate && intervalMonths) {
+        const lastDate = new Date(lastMaintenanceDate);
+        const nextDate = new Date(lastDate);
+        nextDate.setMonth(nextDate.getMonth() + parseInt(intervalMonths));
+        
+        document.getElementById('next_maintenance').value = nextDate.toISOString().split('T')[0];
+    }
+}
+
+// Auto calculate warranty end date (1 year from purchase by default)
+document.getElementById('purchase_date').addEventListener('change', function(e) {
+    if (e.target.value && !document.getElementById('warranty_until').value) {
+        const purchaseDate = new Date(e.target.value);
+        const warrantyDate = new Date(purchaseDate);
+        warrantyDate.setFullYear(warrantyDate.getFullYear() + 1);
+        
+        document.getElementById('warranty_until').value = warrantyDate.toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}

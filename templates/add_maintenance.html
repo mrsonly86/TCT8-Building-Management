@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Lập lịch bảo trì - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Lập lịch bảo trì{% endblock %}
+{% block page_subtitle %}Lập lịch bảo trì cho thiết bị{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Thông tin lịch bảo trì
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_maintenance_post') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="equipment_id" class="form-label">Thiết bị *</label>
+                            <select class="form-control" id="equipment_id" name="equipment_id" required>
+                                <option value="">Chọn thiết bị</option>
+                                {% for equipment in equipment_list %}
+                                    <option value="{{ equipment.id }}" 
+                                            {% if request.args.get('equipment_id') == equipment.id|string %}selected{% endif %}>
+                                        {{ equipment.name }} - {{ equipment.equipment_type }} ({{ equipment.location or 'Không rõ vị trí' }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="maintenance_type" class="form-label">Loại bảo trì *</label>
+                            <select class="form-control" id="maintenance_type" name="maintenance_type" required>
+                                <option value="">Chọn loại bảo trì</option>
+                                <option value="routine">Bảo trì định kỳ</option>
+                                <option value="repair">Sửa chữa</option>
+                                <option value="emergency">Khẩn cấp</option>
+                                <option value="inspection">Kiểm tra</option>
+                                <option value="cleaning">Vệ sinh</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="scheduled_date" class="form-label">Ngày thực hiện *</label>
+                            <input type="datetime-local" class="form-control" id="scheduled_date" name="scheduled_date" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="technician" class="form-label">Kỹ thuật viên</label>
+                            <input type="text" class="form-control" id="technician" name="technician" 
+                                   placeholder="Tên kỹ thuật viên phụ trách">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả công việc</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" 
+                                  placeholder="Mô tả chi tiết về công việc bảo trì cần thực hiện..."></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="estimated_cost" class="form-label">Chi phí dự kiến (VNĐ)</label>
+                            <input type="number" class="form-control" id="estimated_cost" name="estimated_cost" 
+                                   min="0" placeholder="Nhập chi phí dự kiến">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="scheduled">Đã lập lịch</option>
+                                <option value="in_progress">Đang thực hiện</option>
+                                <option value="completed">Hoàn thành</option>
+                                <option value="cancelled">Hủy bỏ</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Show completion fields if status is completed -->
+                    <div id="completion_fields" class="row" style="display: none;">
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="text-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Thông tin hoàn thành
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="completed_date" class="form-label">Ngày hoàn thành</label>
+                            <input type="datetime-local" class="form-control" id="completed_date" name="completed_date">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="actual_cost" class="form-label">Chi phí thực tế (VNĐ)</label>
+                            <input type="number" class="form-control" id="actual_cost" name="actual_cost" 
+                                   min="0" placeholder="Chi phí thực tế">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('equipment') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Quay lại
+                        </a>
+                        
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>
+                                Đặt lại
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Lưu lịch bảo trì
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Set default scheduled date to tomorrow 9:00 AM
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('scheduled_date').value) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(9, 0, 0, 0);
+        
+        const year = tomorrow.getFullYear();
+        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const day = String(tomorrow.getDate()).padStart(2, '0');
+        const hours = String(tomorrow.getHours()).padStart(2, '0');
+        const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+        
+        document.getElementById('scheduled_date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+});
+
+// Show/hide completion fields based on status
+document.getElementById('status').addEventListener('change', function(e) {
+    const completionFields = document.getElementById('completion_fields');
+    const completedDateInput = document.getElementById('completed_date');
+    
+    if (e.target.value === 'completed') {
+        completionFields.style.display = 'block';
+        
+        // Set completed date to now if not set
+        if (!completedDateInput.value) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            completedDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+    } else {
+        completionFields.style.display = 'none';
+    }
+});
+
+// Auto-fill maintenance type based on equipment type
+document.getElementById('equipment_id').addEventListener('change', function(e) {
+    const selectedOption = e.target.selectedOptions[0];
+    if (selectedOption && selectedOption.value) {
+        const equipmentText = selectedOption.textContent.toLowerCase();
+        const maintenanceTypeSelect = document.getElementById('maintenance_type');
+        
+        // Auto-suggest maintenance type
+        if (equipmentText.includes('thang máy')) {
+            maintenanceTypeSelect.value = 'routine';
+        } else if (equipmentText.includes('điều hòa')) {
+            maintenanceTypeSelect.value = 'cleaning';
+        } else if (equipmentText.includes('camera')) {
+            maintenanceTypeSelect.value = 'inspection';
+        }
+    }
+});
+
+// Format cost inputs with thousand separators
+document.getElementById('estimated_cost').addEventListener('input', formatCurrency);
+document.getElementById('actual_cost').addEventListener('input', formatCurrency);
+
+function formatCurrency(e) {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    if (value) {
+        // Store raw value for form submission
+        e.target.dataset.rawValue = value;
+        // Display formatted value
+        e.target.value = parseInt(value).toLocaleString('vi-VN');
+    }
+}
+
+// Remove formatting before form submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const costInputs = ['estimated_cost', 'actual_cost'];
+    costInputs.forEach(function(inputId) {
+        const input = document.getElementById(inputId);
+        if (input.dataset.rawValue) {
+            input.value = input.dataset.rawValue;
+        } else {
+            input.value = input.value.replace(/[^\d]/g, '');
+        }
+    });
+});
+</script>
+{% endblock %}

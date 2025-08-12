@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý phí - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Quản lý phí{% endblock %}
+{% block page_subtitle %}Quản lý các khoản phí của khách hàng{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4>Danh sách phí</h4>
+    </div>
+    <button class="btn btn-primary" onclick="addFee()">
+        <i class="fas fa-plus me-2"></i>
+        Tạo phí mới
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if fees %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Khách hàng</th>
+                        <th>Loại phí</th>
+                        <th>Số tiền</th>
+                        <th>Hạn thanh toán</th>
+                        <th>Ngày thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in fees %}
+                    <tr>
+                        <td>
+                            <strong>{{ fee.customer.full_name }}</strong>
+                            {% if fee.customer.room %}
+                                <br><small class="text-muted">Phòng {{ fee.customer.room.room_number }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ fee.fee_type }}</td>
+                        <td>{{ "{:,.0f}".format(fee.amount) }} VNĐ</td>
+                        <td>{{ fee.due_date.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            {% if fee.paid_date %}
+                                {{ fee.paid_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if fee.status == 'paid' %}
+                                <span class="badge bg-success">Đã thanh toán</span>
+                            {% elif fee.status == 'overdue' %}
+                                <span class="badge bg-danger">Quá hạn</span>
+                            {% else %}
+                                <span class="badge bg-warning">Chờ thanh toán</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-success" onclick="markAsPaid({{ fee.id }})">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="editFee({{ fee.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteFee({{ fee.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-money-bill-wave fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có phí nào</h5>
+            <p class="text-muted">Hãy tạo phí đầu tiên để quản lý thanh toán.</p>
+            <button class="btn btn-primary" onclick="addFee()">
+                <i class="fas fa-plus me-2"></i>
+                Tạo phí đầu tiên
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function addFee() {
+    alert('Chức năng tạo phí mới sẽ được triển khai sau');
+}
+
+function markAsPaid(feeId) {
+    if (confirm('Đánh dấu đã thanh toán?')) {
+        alert('Chức năng thanh toán sẽ được triển khai sau');
+    }
+}
+
+function editFee(feeId) {
+    alert('Chức năng chỉnh sửa phí sẽ được triển khai sau');
+}
+
+function deleteFee(feeId) {
+    if (confirm('Bạn có chắc chắn muốn xóa phí này không?')) {
+        alert('Chức năng xóa phí sẽ được triển khai sau');
+    }
+}
+</script>
+{% endblock %}

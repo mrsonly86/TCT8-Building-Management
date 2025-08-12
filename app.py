@@ -306,19 +306,109 @@ def add_customer_post():
 @app.route('/equipment')
 @admin_required
 def equipment():
+    from datetime import date
     equipment_list = Equipment.query.all()
-    return render_template('equipment.html', equipment_list=equipment_list)
+    today = date.today()
+    return render_template('equipment.html', equipment_list=equipment_list, today=today)
 
 @app.route('/add_equipment')
 @admin_required
 def add_equipment():
     return render_template('add_equipment.html')
 
+@app.route('/add_equipment', methods=['POST'])
+@admin_required
+def add_equipment_post():
+    try:
+        name = request.form['name']
+        equipment_type = request.form['equipment_type']
+        location = request.form['location'] if request.form['location'] else None
+        serial_number = request.form['serial_number'] if request.form['serial_number'] else None
+        purchase_date = datetime.strptime(request.form['purchase_date'], '%Y-%m-%d').date() if request.form['purchase_date'] else None
+        warranty_until = datetime.strptime(request.form['warranty_until'], '%Y-%m-%d').date() if request.form['warranty_until'] else None
+        status = request.form['status']
+        last_maintenance = datetime.strptime(request.form['last_maintenance'], '%Y-%m-%d').date() if request.form['last_maintenance'] else None
+        next_maintenance = datetime.strptime(request.form['next_maintenance'], '%Y-%m-%d').date() if request.form['next_maintenance'] else None
+        
+        # Create new equipment
+        new_equipment = Equipment(
+            name=name,
+            equipment_type=equipment_type,
+            location=location,
+            serial_number=serial_number,
+            purchase_date=purchase_date,
+            warranty_until=warranty_until,
+            status=status,
+            last_maintenance=last_maintenance,
+            next_maintenance=next_maintenance
+        )
+        
+        db.session.add(new_equipment)
+        db.session.commit()
+        
+        flash(f'Đã thêm thiết bị "{name}" thành công!', 'success')
+        return redirect(url_for('equipment'))
+        
+    except Exception as e:
+        flash(f'Có lỗi xảy ra: {str(e)}', 'error')
+        return redirect(url_for('add_equipment'))
+
 @app.route('/add_maintenance')
 @admin_required
 def add_maintenance():
     equipment_list = Equipment.query.all()
     return render_template('add_maintenance.html', equipment_list=equipment_list)
+
+@app.route('/add_maintenance', methods=['POST'])
+@admin_required
+def add_maintenance_post():
+    try:
+        equipment_id = int(request.form['equipment_id'])
+        maintenance_type = request.form['maintenance_type']
+        description = request.form['description'] if request.form['description'] else None
+        technician = request.form['technician'] if request.form['technician'] else None
+        scheduled_date = datetime.strptime(request.form['scheduled_date'], '%Y-%m-%dT%H:%M')
+        estimated_cost = float(request.form['estimated_cost']) if request.form['estimated_cost'] else 0.0
+        status = request.form['status']
+        
+        # Handle completion fields if status is completed
+        completed_date = None
+        actual_cost = None
+        if status == 'completed':
+            if request.form['completed_date']:
+                completed_date = datetime.strptime(request.form['completed_date'], '%Y-%m-%dT%H:%M')
+            if request.form['actual_cost']:
+                actual_cost = float(request.form['actual_cost'])
+        
+        # Create new maintenance record
+        new_maintenance = MaintenanceRecord(
+            equipment_id=equipment_id,
+            maintenance_type=maintenance_type,
+            description=description,
+            technician=technician,
+            cost=actual_cost if actual_cost else estimated_cost,
+            scheduled_date=scheduled_date,
+            completed_date=completed_date,
+            status=status
+        )
+        
+        db.session.add(new_maintenance)
+        
+        # Update equipment status and maintenance dates if completed
+        if status == 'completed':
+            equipment = Equipment.query.get(equipment_id)
+            if equipment:
+                equipment.last_maintenance = completed_date.date() if completed_date else scheduled_date.date()
+                equipment.status = 'active'  # Set back to active after maintenance
+        
+        db.session.commit()
+        
+        flash(f'Đã lập lịch bảo trì thành công!', 'success')
+        return redirect(url_for('equipment'))
+        
+    except Exception as e:
+        flash(f'Có lỗi xảy ra: {str(e)}', 'error')
+        return redirect(url_for('add_maintenance'))
 
 # Fee Management Routes
 @app.route('/fees')
