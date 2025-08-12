@@ -1,0 +1,168 @@
+{
+  "buildingInfo": {
+    "name": "Tòa nhà TCT8",
+    "address": "123 Đường ABC, Quận 1, TP.HCM",
+    "totalFloors": 8,
+    "apartmentsPerFloor": 5,
+    "totalApartments": 40,
+    "managementCompany": "TCT8 Building Management",
+    "contactPhone": "028-1234-5678",
+    "contactEmail": "contact@tct8building.com"
+  },
+  "feeStructure": {
+    "managementFee": {
+      "amount": 20000,
+      "unit": "m2",
+      "description": "Phí quản lý căn hộ"
+    },
+    "serviceFee": {
+      "amount": 500000,
+      "unit": "apartment",
+      "description": "Phí dịch vụ chung"
+    },
+    "parkingFee": {
+      "motorbike": 300000,
+      "car": 1500000,
+      "description": "Phí gửi xe hàng tháng"
+    },
+    "utilities": {
+      "electricity": {
+        "rate": 3500,
+        "unit": "kWh"
+      },
+      "water": {
+        "rate": 25000,
+        "unit": "m3"
+      }
+    }
+  },
+  "apartmentTypes": [
+    {
+      "type": "1PN",
+      "description": "Căn hộ 1 phòng ngủ",
+      "area": "45-55m2",
+      "basePrice": 1500000
+    },
+    {
+      "type": "2PN",
+      "description": "Căn hộ 2 phòng ngủ", 
+      "area": "65-75m2",
+      "basePrice": 2000000
+    },
+    {
+      "type": "3PN",
+      "description": "Căn hộ 3 phòng ngủ",
+      "area": "85-100m2", 
+      "basePrice": 2500000
+    }
+  ],
+  "paymentMethods": [
+    {
+      "id": "bank_transfer",
+      "name": "Chuyển khoản ngân hàng",
+      "description": "Chuyển khoản qua tài khoản ngân hàng",
+      "bankInfo": {
+        "bankName": "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam",
+        "accountNumber": "1234567890",
+        "accountName": "CONG TY TCT8 BUILDING MANAGEMENT"
+      }
+    },
+    {
+      "id": "cash",
+      "name": "Tiền mặt",
+      "description": "Thanh toán bằng tiền mặt tại văn phòng",
+      "office": "Văn phòng tầng 1, tòa nhà TCT8"
+    },
+    {
+      "id": "e_wallet",
+      "name": "Ví điện tử",
+      "description": "Thanh toán qua ví điện tử MoMo, ZaloPay",
+      "wallets": ["MoMo", "ZaloPay", "ViettelPay"]
+    }
+  ],
+  "workingHours": {
+    "office": {
+      "monday_friday": "8:00 - 17:00",
+      "saturday": "8:00 - 12:00",
+      "sunday": "Nghỉ"
+    },
+    "emergency": "24/7",
+    "maintenance": "8:00 - 17:00"
+  },
+  "contacts": {
+    "management": {
+      "name": "Ban quản lý tòa nhà",
+      "phone": "028-1234-5678",
+      "email": "management@tct8building.com"
+    },
+    "security": {
+      "name": "Bảo vệ 24/7",
+      "phone": "028-1234-5679",
+      "email": "security@tct8building.com"
+    },
+    "maintenance": {
+      "name": "Bộ phận kỹ thuật",
+      "phone": "028-1234-5680", 
+      "email": "maintenance@tct8building.com"
+    },
+    "emergency": {
+      "fire": "114",
+      "police": "113",
+      "medical": "115",
+      "building": "028-1234-5679"
+    }
+  },
+  "facilities": [
+    {
+      "name": "Hệ thống thang máy",
+      "description": "2 thang máy tốc độ cao",
+      "status": "active"
+    },
+    {
+      "name": "Hệ thống PCCC",
+      "description": "Hệ thống phòng cháy chữa cháy đầy đủ",
+      "status": "active"
+    },
+    {
+      "name": "Camera an ninh",
+      "description": "Hệ thống camera 24/7",
+      "status": "active"
+    },
+    {
+      "name": "Bãi gửi xe",
+      "description": "Bãi gửi xe máy và ô tô",
+      "status": "active"
+    },
+    {
+      "name": "Khu vườn sinh thái",
+      "description": "Khu vườn xanh tầng trệt",
+      "status": "active"
+    }
+  ],
+  "rules": [
+    {
+      "category": "An ninh",
+      "rules": [
+        "Cư dân phải đeo thẻ căn cước khi ra vào tòa nhà",
+        "Khách vào thăm phải đăng ký với bảo vệ",
+        "Không được mang vật dụng nguy hiểm vào tòa nhà"
+      ]
+    },
+    {
+      "category": "Vệ sinh",
+      "rules": [
+        "Không được xả rác bừa bãi",
+        "Phân loại rác theo đúng quy định",
+        "Giữ gìn vệ sinh khu vực chung"
+      ]
+    },
+    {
+      "category": "Tiếng ồn",
+      "rules": [
+        "Không gây tiếng ồn từ 22:00 - 6:00",
+        "Âm lượng TV, radio ở mức vừa phải",
+        "Thông báo trước khi thi công sửa chữa"
+      ]
+    }
+  ]
+}
