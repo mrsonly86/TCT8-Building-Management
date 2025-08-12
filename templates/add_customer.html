@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm khách hàng mới - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Thêm khách hàng mới{% endblock %}
+{% block page_subtitle %}Thêm khách hàng mới vào hệ thống quản lý{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Thông tin khách hàng mới
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_customer_post') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="full_name" class="form-label">Họ và tên *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" 
+                                   placeholder="Nhập họ và tên đầy đủ" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                   placeholder="Ví dụ: 0123456789">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="Ví dụ: email@example.com">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_number" class="form-label">CCCD/CMND</label>
+                            <input type="text" class="form-control" id="id_number" name="id_number" 
+                                   placeholder="Nhập số CCCD hoặc CMND">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="room_id" class="form-label">Phòng</label>
+                            <select class="form-control" id="room_id" name="room_id">
+                                <option value="">Chọn phòng (tùy chọn)</option>
+                                {% for room in rooms %}
+                                    <option value="{{ room.id }}">
+                                        Phòng {{ room.room_number }} - {{ room.room_type }} 
+                                        (Tầng {{ room.floor }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Chọn phòng nếu khách hàng đã có phòng</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="move_in_date" class="form-label">Ngày vào ở</label>
+                            <input type="date" class="form-control" id="move_in_date" name="move_in_date">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Trạng thái</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="active">Đang ở</option>
+                                <option value="inactive">Đã dọn đi</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" class="form-check-input" id="create_user_account" name="create_user_account">
+                                <label class="form-check-label" for="create_user_account">
+                                    Tạo tài khoản đăng nhập cho khách hàng
+                                </label>
+                            </div>
+                            <div class="form-text">Khách hàng sẽ có thể đăng nhập để xem thông báo và thanh toán</div>
+                        </div>
+                    </div>
+                    
+                    <!-- User account details (show only when checkbox is checked) -->
+                    <div id="user_account_details" class="row" style="display: none;">
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="text-primary">
+                                <i class="fas fa-user-lock me-2"></i>
+                                Thông tin tài khoản đăng nhập
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Tên đăng nhập *</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   placeholder="Nhập tên đăng nhập">
+                            <div class="form-text">Tên đăng nhập phải là duy nhất</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Mật khẩu *</label>
+                            <input type="password" class="form-control" id="password" name="password" 
+                                   placeholder="Nhập mật khẩu">
+                            <div class="form-text">Mật khẩu tối thiểu 6 ký tự</div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('customers') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Quay lại
+                        </a>
+                        
+                        <div>
+                            <button type="reset" class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-undo me-2"></i>
+                                Đặt lại
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Lưu khách hàng
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Show/hide user account details based on checkbox
+document.getElementById('create_user_account').addEventListener('change', function(e) {
+    const userDetails = document.getElementById('user_account_details');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    if (e.target.checked) {
+        userDetails.style.display = 'block';
+        usernameInput.required = true;
+        passwordInput.required = true;
+        
+        // Auto-generate username from full name
+        const fullName = document.getElementById('full_name').value;
+        if (fullName) {
+            generateUsername(fullName);
+        }
+    } else {
+        userDetails.style.display = 'none';
+        usernameInput.required = false;
+        passwordInput.required = false;
+        usernameInput.value = '';
+        passwordInput.value = '';
+    }
+});
+
+// Auto-generate username when full name changes
+document.getElementById('full_name').addEventListener('input', function(e) {
+    if (document.getElementById('create_user_account').checked) {
+        generateUsername(e.target.value);
+    }
+});
+
+function generateUsername(fullName) {
+    if (!fullName) return;
+    
+    // Convert to lowercase, remove accents, keep only alphanumeric
+    let username = fullName.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Remove accents
+        .replace(/đ/g, 'd').replace(/Đ/g, 'D')           // Replace đ
+        .replace(/[^a-z0-9]/g, '');                      // Keep only alphanumeric
+    
+    // Take first 20 characters
+    username = username.substring(0, 20);
+    
+    document.getElementById('username').value = username;
+}
+
+// Auto format phone number
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+    if (value.length > 10) {
+        value = value.slice(0, 10);
+    }
+    e.target.value = value;
+});
+
+// Update room status when room is selected
+document.getElementById('room_id').addEventListener('change', function(e) {
+    if (e.target.value) {
+        // If a room is selected, set status to active and today as move-in date
+        document.getElementById('status').value = 'active';
+        if (!document.getElementById('move_in_date').value) {
+            document.getElementById('move_in_date').value = new Date().toISOString().split('T')[0];
+        }
+    }
+});
+</script>
+{% endblock %}

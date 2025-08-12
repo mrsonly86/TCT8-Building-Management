@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Tổng quan hệ thống quản lý tòa nhà TCT8{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Tổng số phòng</h5>
+                        <h2 class="mb-0">{{ stats.total_rooms }}</h2>
+                    </div>
+                    <i class="fas fa-door-open fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Phòng đã thuê</h5>
+                        <h2 class="mb-0">{{ stats.occupied_rooms }}</h2>
+                    </div>
+                    <i class="fas fa-home fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Khách hàng</h5>
+                        <h2 class="mb-0">{{ stats.total_customers }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Thiết bị</h5>
+                        <h2 class="mb-0">{{ stats.total_equipment }}</h2>
+                    </div>
+                    <i class="fas fa-cogs fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if session.role == 'admin' %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-wrench me-2"></i>
+                    Bảo trì cần thực hiện
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stats.maintenance_pending > 0 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Có <strong>{{ stats.maintenance_pending }}</strong> công việc bảo trì đang chờ thực hiện
+                    </div>
+                    <a href="{{ url_for('equipment') }}" class="btn btn-warning">
+                        <i class="fas fa-eye me-2"></i>
+                        Xem chi tiết
+                    </a>
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Không có công việc bảo trì nào đang chờ
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Thiết bị hỏng hóc
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stats.equipment_broken > 0 %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Có <strong>{{ stats.equipment_broken }}</strong> thiết bị đang hỏng
+                    </div>
+                    <a href="{{ url_for('equipment') }}" class="btn btn-danger">
+                        <i class="fas fa-eye me-2"></i>
+                        Xem chi tiết
+                    </a>
+                {% else %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Tất cả thiết bị đang hoạt động bình thường
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Truy cập nhanh
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('add_room') }}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus-circle fa-2x d-block mb-2"></i>
+                            Thêm phòng mới
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('add_customer') }}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-user-plus fa-2x d-block mb-2"></i>
+                            Thêm khách hàng
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('add_equipment') }}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-cog fa-2x d-block mb-2"></i>
+                            Thêm thiết bị
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('add_maintenance') }}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-calendar-plus fa-2x d-block mb-2"></i>
+                            Lập lịch bảo trì
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<!-- Customer Dashboard -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bell me-2"></i>
+                    Thông báo mới
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Bạn có thể xem các thông báo mới nhất từ ban quản lý.</p>
+                <a href="{{ url_for('notifications') }}" class="btn btn-primary">
+                    <i class="fas fa-eye me-2"></i>
+                    Xem thông báo
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-credit-card me-2"></i>
+                    Thanh toán
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Kiểm tra và thanh toán các khoản phí định kỳ.</p>
+                <a href="{{ url_for('payments') }}" class="btn btn-success">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    Thanh toán
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Báo cáo sự cố
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Nếu bạn phát hiện sự cố trong tòa nhà, hãy báo cáo ngay để được xử lý kịp thời.</p>
+                <a href="{{ url_for('report_issue') }}" class="btn btn-warning">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    Báo cáo sự cố mới
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý thiết bị - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Quản lý thiết bị{% endblock %}
+{% block page_subtitle %}Quản lý thiết bị và lập lịch bảo trì trong tòa nhà{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4>Danh sách thiết bị</h4>
+    </div>
+    <div>
+        <a href="{{ url_for('add_equipment') }}" class="btn btn-primary me-2">
+            <i class="fas fa-plus me-2"></i>
+            Thêm thiết bị
+        </a>
+        <a href="{{ url_for('add_maintenance') }}" class="btn btn-success">
+            <i class="fas fa-calendar-plus me-2"></i>
+            Lập lịch bảo trì
+        </a>
+    </div>
+</div>
+
+<!-- Status Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="status_filter" id="filter_all" checked>
+                    <label class="btn btn-outline-secondary" for="filter_all">Tất cả</label>
+                    
+                    <input type="radio" class="btn-check" name="status_filter" id="filter_active">
+                    <label class="btn btn-outline-success" for="filter_active">Hoạt động</label>
+                    
+                    <input type="radio" class="btn-check" name="status_filter" id="filter_maintenance">
+                    <label class="btn btn-outline-warning" for="filter_maintenance">Bảo trì</label>
+                    
+                    <input type="radio" class="btn-check" name="status_filter" id="filter_broken">
+                    <label class="btn btn-outline-danger" for="filter_broken">Hỏng</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Tìm kiếm thiết bị..." id="search_equipment">
+                    <button class="btn btn-outline-secondary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if equipment_list %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Tên thiết bị</th>
+                        <th>Loại</th>
+                        <th>Vị trí</th>
+                        <th>Trạng thái</th>
+                        <th>Bảo trì cuối</th>
+                        <th>Bảo trì tiếp theo</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for equipment in equipment_list %}
+                    <tr data-status="{{ equipment.status }}">
+                        <td>
+                            <strong>{{ equipment.name }}</strong>
+                            {% if equipment.serial_number %}
+                                <br><small class="text-muted">SN: {{ equipment.serial_number }}</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ equipment.equipment_type }}</td>
+                        <td>{{ equipment.location or '-' }}</td>
+                        <td>
+                            {% if equipment.status == 'active' %}
+                                <span class="badge bg-success">Hoạt động</span>
+                            {% elif equipment.status == 'broken' %}
+                                <span class="badge bg-danger">Hỏng</span>
+                            {% elif equipment.status == 'maintenance' %}
+                                <span class="badge bg-warning">Bảo trì</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ equipment.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if equipment.last_maintenance %}
+                                {{ equipment.last_maintenance.strftime('%d/%m/%Y') }}
+                            {% else %}
+                                <span class="text-muted">Chưa có</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if equipment.next_maintenance %}
+                                {% set days_until = (equipment.next_maintenance - today).days %}
+                                {% if days_until < 0 %}
+                                    <span class="text-danger">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {{ equipment.next_maintenance.strftime('%d/%m/%Y') }} (Quá hạn)
+                                    </span>
+                                {% elif days_until <= 7 %}
+                                    <span class="text-warning">
+                                        <i class="fas fa-clock"></i>
+                                        {{ equipment.next_maintenance.strftime('%d/%m/%Y') }} ({{ days_until }} ngày)
+                                    </span>
+                                {% else %}
+                                    {{ equipment.next_maintenance.strftime('%d/%m/%Y') }}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">Chưa có</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" onclick="viewEquipment({{ equipment.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="editEquipment({{ equipment.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-warning" onclick="scheduleMaintenace({{ equipment.id }})">
+                                    <i class="fas fa-wrench"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="deleteEquipment({{ equipment.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có thiết bị nào</h5>
+            <p class="text-muted">Hãy thêm thiết bị đầu tiên để bắt đầu quản lý.</p>
+            <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Thêm thiết bị đầu tiên
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filter functionality
+document.querySelectorAll('input[name="status_filter"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        filterEquipment();
+    });
+});
+
+// Search functionality
+document.getElementById('search_equipment').addEventListener('input', function() {
+    filterEquipment();
+});
+
+function filterEquipment() {
+    const statusFilter = document.querySelector('input[name="status_filter"]:checked').id.replace('filter_', '');
+    const searchTerm = document.getElementById('search_equipment').value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(function(row) {
+        const status = row.dataset.status;
+        const text = row.textContent.toLowerCase();
+        
+        const statusMatch = statusFilter === 'all' || status === statusFilter;
+        const searchMatch = text.includes(searchTerm);
+        
+        row.style.display = statusMatch && searchMatch ? '' : 'none';
+    });
+}
+
+function viewEquipment(equipmentId) {
+    // TODO: Implement view equipment details functionality
+    alert('Chức năng xem chi tiết thiết bị sẽ được triển khai sau');
+}
+
+function editEquipment(equipmentId) {
+    // TODO: Implement edit equipment functionality
+    alert('Chức năng chỉnh sửa thiết bị sẽ được triển khai sau');
+}
+
+function scheduleMaintenace(equipmentId) {
+    window.location.href = '{{ url_for("add_maintenance") }}?equipment_id=' + equipmentId;
+}
+
+function deleteEquipment(equipmentId) {
+    if (confirm('Bạn có chắc chắn muốn xóa thiết bị này không?')) {
+        // TODO: Implement delete equipment functionality
+        alert('Chức năng xóa thiết bị sẽ được triển khai sau');
+    }
+}
+</script>
+{% endblock %}

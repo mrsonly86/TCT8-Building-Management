@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Thanh toán - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Thanh toán{% endblock %}
+{% block page_subtitle %}Xem và thanh toán các khoản phí{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Danh sách khoản phí</h5>
+            </div>
+            <div class="card-body">
+                {% if fees %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Loại phí</th>
+                                <th>Số tiền</th>
+                                <th>Hạn thanh toán</th>
+                                <th>Trạng thái</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fee in fees %}
+                            <tr>
+                                <td>
+                                    <strong>{{ fee.fee_type }}</strong>
+                                    {% if fee.description %}
+                                        <br><small class="text-muted">{{ fee.description }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong class="text-primary">{{ "{:,.0f}".format(fee.amount) }} VNĐ</strong>
+                                </td>
+                                <td>
+                                    {{ fee.due_date.strftime('%d/%m/%Y') }}
+                                    {% set days_until = (fee.due_date.date() - today).days %}
+                                    {% if days_until < 0 %}
+                                        <br><small class="text-danger">Quá hạn {{ (-days_until) }} ngày</small>
+                                    {% elif days_until <= 3 %}
+                                        <br><small class="text-warning">Còn {{ days_until }} ngày</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if fee.status == 'paid' %}
+                                        <span class="badge bg-success">Đã thanh toán</span>
+                                        {% if fee.paid_date %}
+                                            <br><small class="text-muted">{{ fee.paid_date.strftime('%d/%m/%Y') }}</small>
+                                        {% endif %}
+                                    {% elif fee.status == 'overdue' %}
+                                        <span class="badge bg-danger">Quá hạn</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Chờ thanh toán</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if fee.status != 'paid' %}
+                                        <button class="btn btn-success btn-sm" onclick="payFee({{ fee.id }}, {{ fee.amount }})">
+                                            <i class="fas fa-credit-card me-1"></i>
+                                            Thanh toán
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                                            <i class="fas fa-check me-1"></i>
+                                            Đã thanh toán
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Summary -->
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <strong>Tổng phí chờ thanh toán:</strong><br>
+                            {% set unpaid_total = fees | selectattr('status', 'ne', 'paid') | sum(attribute='amount') %}
+                            <span class="h5">{{ "{:,.0f}".format(unpaid_total) }} VNĐ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {% if unpaid_total > 0 %}
+                        <button class="btn btn-primary w-100" onclick="payAllFees()">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Thanh toán tất cả
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Không có khoản phí nào</h5>
+                    <p class="text-muted">Hiện tại bạn không có khoản phí nào cần thanh toán.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Hướng dẫn thanh toán</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6><i class="fas fa-university me-2"></i>Chuyển khoản ngân hàng</h6>
+                    <p class="small text-muted mb-1">Số tài khoản: <strong>1234567890</strong></p>
+                    <p class="small text-muted mb-1">Ngân hàng: <strong>Vietcombank</strong></p>
+                    <p class="small text-muted">Chủ tài khoản: <strong>Ban Quản Lý TCT8</strong></p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-qrcode me-2"></i>Quét mã QR</h6>
+                    <div class="text-center">
+                        <div class="bg-light p-3 rounded">
+                            <i class="fas fa-qrcode fa-3x text-muted"></i>
+                            <p class="small text-muted mt-2">Mã QR thanh toán</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-credit-card me-2"></i>Thanh toán trực tuyến</h6>
+                    <p class="small text-muted">Sử dụng thẻ ATM/Visa/Mastercard để thanh toán trực tiếp trên hệ thống.</p>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Lưu ý:</strong> Khi chuyển khoản, vui lòng ghi rõ mã khách hàng và loại phí trong nội dung chuyển khoản.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function payFee(feeId, amount) {
+    const formattedAmount = amount.toLocaleString('vi-VN') + ' VNĐ';
+    if (confirm('Xác nhận thanh toán ' + formattedAmount + '?')) {
+        // TODO: Implement payment processing
+        alert('Chức năng thanh toán sẽ được tích hợp với cổng thanh toán sau');
+    }
+}
+
+function payAllFees() {
+    if (confirm('Xác nhận thanh toán tất cả các khoản phí?')) {
+        // TODO: Implement bulk payment processing
+        alert('Chức năng thanh toán hàng loạt sẽ được triển khai sau');
+    }
+}
+</script>
+{% endblock %}
