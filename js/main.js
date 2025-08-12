@@ -294,30 +294,40 @@ class TCT8Manager {
     }
 
     showSuccess(message) {
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công!',
-            text: message,
-            timer: 2000,
-            showConfirmButton: false
-        });
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            alert(`Thành công! ${message}`);
+        }
     }
 
     showConfirm(message, callback) {
-        Swal.fire({
-            title: 'Xác nhận',
-            text: message,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#007bff',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Xác nhận',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed && callback) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Xác nhận',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#007bff',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed && callback) {
+                    callback();
+                }
+            });
+        } else {
+            if (confirm(message) && callback) {
                 callback();
             }
-        });
+        }
     }
 
     // Export data functionality
@@ -343,11 +353,15 @@ class TCT8Manager {
                 this.showSuccess('Nhập dữ liệu thành công!');
                 location.reload();
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: 'File không hợp lệ!'
-                });
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'File không hợp lệ!'
+                    });
+                } else {
+                    alert('Lỗi: File không hợp lệ!');
+                }
             }
         };
         reader.readAsText(file);

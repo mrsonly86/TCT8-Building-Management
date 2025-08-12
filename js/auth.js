@@ -64,11 +64,15 @@ class AuthManager {
 
         // Validate input
         if (!username || !password) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Lỗi',
-                text: 'Vui lòng nhập đầy đủ thông tin đăng nhập!'
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Vui lòng nhập đầy đủ thông tin đăng nhập!'
+                });
+            } else {
+                alert('Vui lòng nhập đầy đủ thông tin đăng nhập!');
+            }
             return;
         }
 
@@ -93,24 +97,33 @@ class AuthManager {
             }
 
             // Show success message
-            Swal.fire({
-                icon: 'success',
-                title: 'Đăng nhập thành công!',
-                text: `Chào mừng ${user.name}`,
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                // Redirect to dashboard
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đăng nhập thành công!',
+                    text: `Chào mừng ${user.name}`,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    // Redirect to dashboard
+                    window.location.href = 'index.html';
+                });
+            } else {
+                alert(`Đăng nhập thành công! Chào mừng ${user.name}`);
                 window.location.href = 'index.html';
-            });
+            }
 
         } else {
             // Login failed
-            Swal.fire({
-                icon: 'error',
-                title: 'Đăng nhập thất bại',
-                text: 'Tên đăng nhập hoặc mật khẩu không đúng!'
-            });
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Đăng nhập thất bại',
+                    text: 'Tên đăng nhập hoặc mật khẩu không đúng!'
+                });
+            } else {
+                alert('Đăng nhập thất bại! Tên đăng nhập hoặc mật khẩu không đúng!');
+            }
         }
     }
 
@@ -153,15 +166,20 @@ class AuthManager {
         localStorage.removeItem('tct8_session');
         sessionStorage.removeItem('tct8_session');
         
-        Swal.fire({
-            icon: 'info',
-            title: 'Đã đăng xuất',
-            text: 'Bạn đã được đăng xuất khỏi hệ thống',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'info',
+                title: 'Đã đăng xuất',
+                text: 'Bạn đã được đăng xuất khỏi hệ thống',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.href = 'login.html';
+            });
+        } else {
+            alert('Đã đăng xuất khỏi hệ thống');
             window.location.href = 'login.html';
-        });
+        }
     }
 
     hasPermission(requiredRole) {
