@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý phí - TCT8 Building Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-building fa-2x mb-2"></i>
+                <h4>TCT8 Building</h4>
+                <p class="mb-0 small">Management System</p>
+            </div>
+            
+            <div class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="apartments.html">
+                            <i class="fas fa-home"></i>
+                            Quản lý căn hộ
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="residents.html">
+                            <i class="fas fa-users"></i>
+                            Quản lý cư dân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="fees.html">
+                            <i class="fas fa-calculator"></i>
+                            Quản lý phí
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html">
+                            <i class="fas fa-chart-bar"></i>
+                            Báo cáo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="notifications.html">
+                            <i class="fas fa-bell"></i>
+                            Thông báo
+                        </a>
+                    </li>
+                </ul>
+                
+                <hr class="my-3" style="border-color: rgba(255,255,255,0.2);">
+                
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="authManager.logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Đăng xuất
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="header-title">Quản lý phí</h1>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold" id="userName">Người dùng</div>
+                            <div class="small text-muted" id="userRole">Role</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Statistics Row -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-success text-white">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-number text-success" id="totalRevenue">0đ</div>
+                            <div class="stat-label">Tổng thu</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-warning text-white">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-number text-warning" id="pendingPayments">0đ</div>
+                            <div class="stat-label">Chưa thanh toán</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-danger text-white">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-number text-danger" id="overduePayments">0</div>
+                            <div class="stat-label">Quá hạn</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6 mb-3">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-info text-white">
+                                <i class="fas fa-percent"></i>
+                            </div>
+                            <div class="stat-number text-info" id="collectionRate">0%</div>
+                            <div class="stat-label">Tỷ lệ thu</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Navigation -->
+                <ul class="nav nav-tabs mb-4" id="feeTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments" type="button" role="tab">
+                            <i class="fas fa-credit-card"></i> Thanh toán
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="bills-tab" data-bs-toggle="tab" data-bs-target="#bills" type="button" role="tab">
+                            <i class="fas fa-file-invoice"></i> Hóa đơn
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="fee-structure-tab" data-bs-toggle="tab" data-bs-target="#fee-structure" type="button" role="tab">
+                            <i class="fas fa-cogs"></i> Cấu trúc phí
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="feeTabContent">
+                    <!-- Payments Tab -->
+                    <div class="tab-pane fade show active" id="payments" role="tabpanel">
+                        <div class="data-table">
+                            <div class="table-header">
+                                <h5 class="mb-0">Danh sách thanh toán</h5>
+                                <div class="table-actions">
+                                    <div class="search-box">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" class="form-control" placeholder="Tìm kiếm..." id="paymentSearchInput">
+                                    </div>
+                                    <select class="form-select" id="monthFilter" style="width: 150px;">
+                                        <option value="">Tất cả tháng</option>
+                                    </select>
+                                    <select class="form-select" id="paymentStatusFilter" style="width: 150px;">
+                                        <option value="">Tất cả trạng thái</option>
+                                        <option value="paid">Đã thanh toán</option>
+                                        <option value="pending">Chưa thanh toán</option>
+                                        <option value="overdue">Quá hạn</option>
+                                    </select>
+                                    <button class="btn btn-primary" onclick="showGenerateBillModal()">
+                                        <i class="fas fa-plus"></i> Tạo hóa đơn
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Căn hộ</th>
+                                            <th>Tháng</th>
+                                            <th>Phí quản lý</th>
+                                            <th>Điện</th>
+                                            <th>Nước</th>
+                                            <th>Dịch vụ</th>
+                                            <th>Tổng cộng</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="paymentsTableBody">
+                                        <tr>
+                                            <td colspan="9" class="text-center py-4">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                                Đang tải...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center p-3">
+                                <div class="text-muted">
+                                    Hiển thị <span id="paymentShowingFrom">0</span> - <span id="paymentShowingTo">0</span> của <span id="paymentTotalRecords">0</span> thanh toán
+                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0" id="paymentPagination">
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bills Tab -->
+                    <div class="tab-pane fade" id="bills" role="tabpanel">
+                        <div class="data-table">
+                            <div class="table-header">
+                                <h5 class="mb-0">Quản lý hóa đơn</h5>
+                                <div class="table-actions">
+                                    <button class="btn btn-success" onclick="exportBills()">
+                                        <i class="fas fa-file-excel"></i> Xuất Excel
+                                    </button>
+                                    <button class="btn btn-info" onclick="printBills()">
+                                        <i class="fas fa-print"></i> In hóa đơn
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="row" id="billsContainer">
+                                <div class="col-12 text-center py-4">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Đang tải...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fee Structure Tab -->
+                    <div class="tab-pane fade" id="fee-structure" role="tabpanel">
+                        <div class="data-table">
+                            <div class="table-header">
+                                <h5 class="mb-0">Cấu trúc phí</h5>
+                                <div class="table-actions">
+                                    <button class="btn btn-primary" onclick="showAddFeeTypeModal()">
+                                        <i class="fas fa-plus"></i> Thêm loại phí
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Loại phí</th>
+                                            <th>Mức phí</th>
+                                            <th>Đơn vị</th>
+                                            <th>Mô tả</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="feeStructureTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-4">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                                Đang tải...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade" id="paymentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalTitle">Chi tiết thanh toán</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Căn hộ</label>
+                                    <input type="text" class="form-control" id="paymentApartment" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Tháng</label>
+                                    <input type="text" class="form-control" id="paymentMonth" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Phí quản lý</label>
+                                    <input type="number" class="form-control" id="managementFee" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Phí dịch vụ</label>
+                                    <input type="number" class="form-control" id="serviceFee" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Tiền điện</label>
+                                    <input type="number" class="form-control" id="electricBill">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Tiền nước</label>
+                                    <input type="number" class="form-control" id="waterBill">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Phí gửi xe</label>
+                                    <input type="number" class="form-control" id="parkingFee">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Tổng cộng</label>
+                                    <input type="number" class="form-control" id="totalAmount" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Phương thức thanh toán</label>
+                                    <select class="form-select" id="paymentMethod">
+                                        <option value="cash">Tiền mặt</option>
+                                        <option value="bank_transfer">Chuyển khoản</option>
+                                        <option value="e_wallet">Ví điện tử</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Ngày thanh toán</label>
+                                    <input type="date" class="form-control" id="paidDate">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="paymentNotes" rows="3"></textarea>
+                        </div>
+                        
+                        <input type="hidden" id="paymentId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success" onclick="markAsPaid()">Đánh dấu đã thanh toán</button>
+                    <button type="button" class="btn btn-primary" onclick="savePayment()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generate Bill Modal -->
+    <div class="modal fade" id="generateBillModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tạo hóa đơn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="generateBillForm">
+                        <div class="form-group mb-3">
+                            <label class="form-label">Tháng *</label>
+                            <input type="month" class="form-control" id="billMonth" required>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label class="form-label">Căn hộ</label>
+                            <select class="form-select" id="billApartments">
+                                <option value="all">Tất cả căn hộ</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="includeParkingFee" checked>
+                            <label class="form-check-label" for="includeParkingFee">
+                                Bao gồm phí gửi xe
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="generateBills()">Tạo hóa đơn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/fees.js"></script>
+</body>
+</html>
