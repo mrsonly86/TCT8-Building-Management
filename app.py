@@ -236,6 +236,72 @@ def add_customer():
     rooms = Room.query.filter_by(status='available').all()
     return render_template('add_customer.html', rooms=rooms)
 
+@app.route('/add_customer', methods=['POST'])
+@admin_required
+def add_customer_post():
+    try:
+        full_name = request.form['full_name']
+        phone = request.form['phone'] if request.form['phone'] else None
+        email = request.form['email'] if request.form['email'] else None
+        id_number = request.form['id_number'] if request.form['id_number'] else None
+        room_id = int(request.form['room_id']) if request.form['room_id'] else None
+        move_in_date = datetime.strptime(request.form['move_in_date'], '%Y-%m-%d') if request.form['move_in_date'] else None
+        status = request.form['status']
+        create_user_account = 'create_user_account' in request.form
+        
+        # Create user account if requested
+        user_id = None
+        if create_user_account:
+            username = request.form['username']
+            password = request.form['password']
+            
+            # Check if username already exists
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                flash(f'Tên đăng nhập "{username}" đã tồn tại.', 'error')
+                return redirect(url_for('add_customer'))
+            
+            # Create user account (hidden from main login)
+            new_user = User(username=username, role='customer', is_hidden=True)
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.flush()  # Get the user ID
+            user_id = new_user.id
+        
+        # Create customer
+        new_customer = Customer(
+            full_name=full_name,
+            phone=phone,
+            email=email,
+            id_number=id_number,
+            room_id=room_id,
+            user_id=user_id,
+            move_in_date=move_in_date,
+            status=status
+        )
+        
+        db.session.add(new_customer)
+        
+        # Update room status if room is assigned
+        if room_id:
+            room = Room.query.get(room_id)
+            if room:
+                room.status = 'occupied'
+        
+        db.session.commit()
+        
+        success_message = f'Đã thêm khách hàng "{full_name}" thành công!'
+        if create_user_account:
+            success_message += f' Tài khoản đăng nhập: {username}'
+        
+        flash(success_message, 'success')
+        return redirect(url_for('customers'))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Có lỗi xảy ra: {str(e)}', 'error')
+        return redirect(url_for('add_customer'))
+
 # Equipment Management Routes
 @app.route('/equipment')
 @admin_required

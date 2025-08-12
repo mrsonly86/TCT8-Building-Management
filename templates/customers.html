@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý khách hàng - Hệ Thống Quản Lý Tòa Nhà TCT8{% endblock %}
+
+{% block page_title %}Quản lý khách hàng{% endblock %}
+{% block page_subtitle %}Quản lý danh sách khách hàng trong tòa nhà{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4>Danh sách khách hàng</h4>
+    </div>
+    <a href="{{ url_for('add_customer') }}" class="btn btn-primary">
+        <i class="fas fa-user-plus me-2"></i>
+        Thêm khách hàng mới
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if customers %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Phòng</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>CCCD/CMND</th>
+                        <th>Ngày vào ở</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>
+                            <strong>{{ customer.full_name }}</strong>
+                        </td>
+                        <td>
+                            {% if customer.room %}
+                                <span class="badge bg-primary">{{ customer.room.room_number }}</span>
+                            {% else %}
+                                <span class="text-muted">Chưa có phòng</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.phone %}
+                                {{ customer.phone }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.email %}
+                                {{ customer.email }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.id_number %}
+                                {{ customer.id_number }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.move_in_date %}
+                                {{ customer.move_in_date.strftime('%d/%m/%Y') }}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if customer.status == 'active' %}
+                                <span class="badge bg-success">Đang ở</span>
+                            {% elif customer.status == 'inactive' %}
+                                <span class="badge bg-secondary">Đã dọn đi</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ customer.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info" onclick="viewCustomer({{ customer.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="editCustomer({{ customer.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                {% if customer.user %}
+                                    <button class="btn btn-outline-success" onclick="resetPassword({{ customer.id }})">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-outline-warning" onclick="createUserAccount({{ customer.id }})">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                {% endif %}
+                                <button class="btn btn-outline-danger" onclick="deleteCustomer({{ customer.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Chưa có khách hàng nào</h5>
+            <p class="text-muted">Hãy thêm khách hàng đầu tiên để bắt đầu quản lý.</p>
+            <a href="{{ url_for('add_customer') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>
+                Thêm khách hàng đầu tiên
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewCustomer(customerId) {
+    // TODO: Implement view customer details functionality
+    alert('Chức năng xem chi tiết khách hàng sẽ được triển khai sau');
+}
+
+function editCustomer(customerId) {
+    // TODO: Implement edit customer functionality
+    alert('Chức năng chỉnh sửa khách hàng sẽ được triển khai sau');
+}
+
+function createUserAccount(customerId) {
+    if (confirm('Bạn có muốn tạo tài khoản đăng nhập cho khách hàng này không?')) {
+        // TODO: Implement create user account functionality
+        alert('Chức năng tạo tài khoản sẽ được triển khai sau');
+    }
+}
+
+function resetPassword(customerId) {
+    if (confirm('Bạn có muốn đặt lại mật khẩu cho khách hàng này không?')) {
+        // TODO: Implement reset password functionality
+        alert('Chức năng đặt lại mật khẩu sẽ được triển khai sau');
+    }
+}
+
+function deleteCustomer(customerId) {
+    if (confirm('Bạn có chắc chắn muốn xóa khách hàng này không?')) {
+        // TODO: Implement delete customer functionality
+        alert('Chức năng xóa khách hàng sẽ được triển khai sau');
+    }
+}
+</script>
+{% endblock %}

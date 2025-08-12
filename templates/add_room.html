@@ -110,10 +110,13 @@ document.getElementById('room_number').addEventListener('input', function(e) {
     e.target.value = value.padStart(Math.min(value.length, 3), '0');
 });
 
-// Auto format monthly fee with thousand separators
+// Auto format monthly fee with thousand separators  
 document.getElementById('monthly_fee').addEventListener('input', function(e) {
     let value = e.target.value.replace(/[^\d]/g, '');
     if (value) {
+        // Store the raw number for form submission
+        e.target.dataset.rawValue = value;
+        // Display formatted value
         e.target.value = parseInt(value).toLocaleString('vi-VN');
     }
 });
@@ -121,7 +124,12 @@ document.getElementById('monthly_fee').addEventListener('input', function(e) {
 // Remove formatting before form submission
 document.querySelector('form').addEventListener('submit', function(e) {
     const monthlyFeeInput = document.getElementById('monthly_fee');
-    monthlyFeeInput.value = monthlyFeeInput.value.replace(/[^\d]/g, '');
+    // Use stored raw value if available, otherwise clean the displayed value
+    if (monthlyFeeInput.dataset.rawValue) {
+        monthlyFeeInput.value = monthlyFeeInput.dataset.rawValue;
+    } else {
+        monthlyFeeInput.value = monthlyFeeInput.value.replace(/[^\d]/g, '');
+    }
 });
 </script>
 {% endblock %}
